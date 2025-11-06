@@ -13,12 +13,8 @@ const GestionPagos = require('./src/controllers/GestionPagos');
 const GestionServicios = require('./src/controllers/GestionServicios');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080; 
 
-// Al final del archivo, donde está app.listen, cambia a:
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Servidor en puerto ${PORT}`);
-});
 // Middlewares
 app.use(cors());
 app.use(express.json());

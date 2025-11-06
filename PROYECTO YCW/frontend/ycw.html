@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Sistema de Arrendamientos</title>
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Face API -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+    <script defer src="js/faceRecognition.js"></script>
+</head>
+<body>
+    <!-- Fondo animado -->
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <!-- Contenedor principal -->
+    <div class="login-wrapper">
+        <div class="login-container">
+            <!-- Logo y título -->
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h1>Nido Rent</h1>
+                <p class="subtitle">Gestión inteligente de propiedades YCW</p>
+            </div>
+
+            <!-- Alerta -->
+            <div id="alert" class="alert" style="display: none;">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-message"></div>
+            </div>
+
+            <!-- Formulario de Login -->
+            <form id="loginForm" class="login-form" style="display: block;">
+                <div class="input-group">
+                    <label for="email">Correo Electrónico</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <input type="email" id="email" placeholder="tu@correo.com" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Documento de Identidad</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="5" y="11" width="14" height="10" rx="2" ry="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="16" r="1" fill="currentColor"/>
+                            <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <input type="password" id="password" placeholder="Tu número de documento" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login" id="btnLogin">
+                    <span class="btn-text">Continuar</span>
+                    <span class="btn-loader" style="display: none;">
+                        <div class="spinner"></div>
+                    </span>
+                </button>
+            </form>
+
+            <!-- Modal de Verificación Facial -->
+            <div id="faceAuthModal" class="modal" style="display: none;">
+                <div class="modal-content" style="max-width: 600px; text-align: center;">
+                    <div class="modal-header" style="border-bottom: none;">
+                        <h2>🎭 Verificación Facial</h2>
+                    </div>
+                    
+                    <div id="faceAuthContent">
+                        <p style="color: #64748b; margin-bottom: 20px;">
+                            Colócate frente a la cámara para verificar tu identidad
+                        </p>
+                        
+                        <div style="position: relative; display: inline-block;">
+                            <video id="faceVideo" width="480" height="360" autoplay muted style="border-radius: 15px; border: 3px solid #0f766e;"></video>
+                            <canvas id="faceCanvas" width="480" height="360" style="position: absolute; top: 0; left: 0;"></canvas>
+                        </div>
+                        
+                        <div id="faceInstructions" style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-radius: 10px; border-left: 4px solid #0ea5e9;">
+                            <p style="margin: 0; color: #0c4a6e; font-weight: 500;">
+                                📸 Asegúrate de tener buena iluminación
+                            </p>
+                        </div>
+                        
+                        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+                            <button id="btnCapturarRostro" class="btn btn-success" style="padding: 12px 30px;">
+                                📸 Capturar Rostro
+                            </button>
+                            <button id="btnCancelarFace" class="btn" style="padding: 12px 30px; background: #6b7280; color: white;">
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Pantalla de procesamiento -->
+                    <div id="faceProcessing" style="display: none;">
+                        <div style="font-size: 4em; margin-bottom: 20px;">🔍</div>
+                        <h3>Verificando tu identidad...</h3>
+                        <div class="spinner" style="margin: 20px auto;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Registro Facial (primera vez) -->
+            <div id="faceRegisterModal" class="modal" style="display: none;">
+                <div class="modal-content" style="max-width: 600px; text-align: center;">
+                    <div class="modal-header" style="border-bottom: none;">
+                        <h2>📸 Registro Facial</h2>
+                    </div>
+                    
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #f59e0b;">
+                        <p style="margin: 0; color: #92400e;">
+                            <strong>⚠️ Primera vez:</strong> Necesitamos registrar tu rostro para futuras verificaciones
+                        </p>
+                    </div>
+                    
+                    <div style="position: relative; display: inline-block;">
+                        <video id="faceRegisterVideo" width="480" height="360" autoplay muted style="border-radius: 15px; border: 3px solid #0f766e;"></video>
+                        <canvas id="faceRegisterCanvas" width="480" height="360" style="position: absolute; top: 0; left: 0;"></canvas>
+                    </div>
+                    
+                    <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+                        <button id="btnRegistrarRostro" class="btn btn-success" style="padding: 12px 30px;">
+                            ✅ Registrar Mi Rostro
+                        </button>
+                        <button id="btnCancelarRegistro" class="btn" style="padding: 12px 30px; background: #6b7280; color: white;">
+                            Ahora No
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <p>¿Problemas para acceder? <a href="#">Contacta soporte</a></p>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="info-panel">
+            <div class="info-content">
+                <h2>Bienvenido</h2>
+                <p>Administra tus propiedades de manera eficiente y segura.</p>
+                <ul class="features-list">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Autenticación facial segura</span>
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Gestión de contratos</span>
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Control de pagos</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/loginFaceAuth.js"></script>
+</body>
+</html>

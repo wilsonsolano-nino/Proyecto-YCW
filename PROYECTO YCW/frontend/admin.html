@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Administrador</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Estilos específicos del dashboard */
+        .dashboard {
+            min-height: 100vh;
+            background: #f8fafc;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 10px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .stat-card:nth-child(1) { border-left-color: #0f766e; }
+        .stat-card:nth-child(2) { border-left-color: #fb7185; }
+        .stat-card:nth-child(3) { border-left-color: #f59e0b; }
+        .stat-card:nth-child(4) { border-left-color: #14b8a6; }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: white;
+            border: none;
+            padding: 15px 28px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            color: #64748b;
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(15, 118, 110, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .card h2 {
+            color: #0f766e;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ea580c 0%, #f59e0b 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-header h2 {
+            color: #0f766e;
+            font-size: 24px;
+        }
+
+        .close {
+            font-size: 32px;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: all 0.3s;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #0f172a;
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #475569;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #0f766e;
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .spinner {
+            border: 4px solid #f1f5f9;
+            border-top: 4px solid #0f766e;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <!-- Navbar -->
+    <div class="navbar">
+        <h1> Apartado de Administracion</h1>
+        <div class="user-info">
+            <span id="userName">Cargando...</span>
+            <button class="btn-logout" onclick="logout()">Cerrar Sesion</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Estadísticas -->
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total Locales</h3>
+                <div class="number" id="totalLocales">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Arrendatarios</h3>
+                <div class="number" id="totalArrendatarios">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Contratos Activos</h3>
+                <div class="number" id="totalContratos">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pagos Registrados</h3>
+                <div class="number" id="totalPagos">0</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab-header">
+               <button class="tab active" onclick="showTab('locales')">🏢 Locales</button>
+               <button class="tab" onclick="showTab('arrendatarios')">👥 Arrendatarios</button>
+               <button class="tab" onclick="showTab('contratos')">📄 Contratos</button>
+               <button class="tab" onclick="showTab('pagos')">💰 Pagos</button>
+               <button class="tab" onclick="showTab('mantenimiento')">🔧 Mantenimiento</button>
+               <button class="tab" onclick="showTab('servicios')">⚡ Servicios</button>
+             </div>
+        </div>
+
+<!-- Tab Locales -->
+<div id="locales" class="tab-content active">
+    <div class="card">
+        <h2>Gestion de Locales</h2>
+        <button class="btn btn-primary" onclick="showModal('modalLocal')">+ Anadir Local</button>
+        <table id="tablaLocales">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Direccion</th>
+                    <th>Area (m²)</th>
+                    <th>Valor Arriendo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="localesBody"></tbody> <!-- AGREGAR ESTE ID -->
+        </table>
+    </div>
+</div>
+
+        <!-- Tab Arrendatarios -->
+        <div id="arrendatarios" class="tab-content">
+            <div class="card">
+                <h2>Gestion de Arrendatarios</h2>
+                <button class="btn btn-primary" onclick="showModal('modalArrendatario')">+ Anadir Arrendatario</button>
+                <table id="tablaArrendatarios">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Documento</th>
+            <th>Telefono</th>
+            <th>Correo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+            </div>
+        </div>
+
+<!-- Tab Contratos -->
+<div id="contratos" class="tab-content">
+    <div class="card">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>Contratos Registrados</h2>
+            <button class="btn btn-primary" onclick="showModal('modalContratoNuevo')">+ Nuevo Contrato</button>
+        </div>
+        <table id="tablaContratos">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Local</th>
+                    <th>Arrendatario</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Tab Pagos -->
+<div id="pagos" class="tab-content">
+    <div class="card">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>💰 Historial de Pagos</h2>
+            <div>
+                <button class="btn btn-warning" onclick="generarReporteMora()">📊 Reporte de Pagos</button>
+                <button class="btn btn-primary" onclick="cargarTodosLosPagos()" style="margin-left: 10px;">🔄 Actualizar</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="tablaPagos" class="admin-pagos-table">
+                <thead>
+                    <tr>
+                        <th>Arrendatario</th>
+                        <th>Documento</th>
+                        <th>Local</th>
+                        <th>Fecha</th>
+                        <th>Monto</th>
+                        <th>Tipo de Pago</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaTodosLosPagos">
+                    <!-- Los pagos se cargarán aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Tab Mantenimiento -->
+<div id="mantenimiento" class="tab-content">
+    <div class="card">
+        <h2>🛠️ Solicitudes de Mantenimiento</h2>
+        <div style="background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <p style="color: #64748b; margin: 0;">
+                <strong>Nota:</strong> Aquí puedes ver las solicitudes de mantenimiento realizadas por los arrendatarios.
+            </p>
+        </div>
+        
+        <table id="tablaMantenimiento">
+            <thead>
+                <tr>
+                    <th>Local</th>
+                    <th>Tipo de Problema</th>
+                    <th>Descripción</th>
+                    <th>Prioridad</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Tab Solicitudes (alias de mantenimiento) -->
+<div id="solicitudes" class="tab-content">
+    <div class="card">
+        <h2>🔧 Solicitudes de Mantenimiento</h2>
+        <div style="background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <p style="color: #64748b; margin: 0;">
+                <strong>Nota:</strong> Aquí puedes ver las solicitudes de mantenimiento realizadas por los arrendatarios.
+            </p>
+        </div>
+        
+        <table id="tablaSolicitudes">
+            <thead>
+                <tr>
+                    <th>Local</th>
+                    <th>Tipo de Problema</th>
+                    <th>Descripción</th>
+                    <th>Prioridad</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ✅ NUEVO: Selección de servicios específicos -->
+<div id="seleccionServicios" style="display: none;">
+    <label><strong>⚡ Servicios a Pagar:</strong></label>
+    <div class="servicios-checkbox" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px;">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="serviciosPago[]" value="1" id="servicioAgua">
+            <label class="form-check-label" for="servicioAgua">
+                💧 Agua - $50,000
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="serviciosPago[]" value="2" id="servicioLuz">
+            <label class="form-check-label" for="servicioLuz">
+                💡 Luz - $80,000
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="serviciosPago[]" value="3" id="servicioInternet">
+            <label class="form-check-label" for="servicioInternet">
+                🌐 Internet - $60,000
+            </label>
+        </div>
+    </div>
+</div>
+
+        <!-- En la sección de servicios, agrega este botón -->
+<div class="tab-content" id="servicios">
+    <div class="section-header">
+        <h2>🏠 Servicios por Local</h2>
+        <button class="btn btn-success" onclick="mostrarModalAgregarServicio()">
+            ➕ Agregar Servicio
+        </button>
+    </div>
+    
+    <div class="table-container">
+        <table id="tablaServicios" class="data-table">
+            <thead>
+                <tr>
+                    <th>LOCAL</th>
+                    <th>DIRECCIÓN</th>
+                    <th>SERVICIOS INCLUIDOS</th>
+                    <th>VALOR TOTAL SERVICIOS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Los datos se cargarán aquí -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+    <!-- Modal Añadir Local -->
+    <div id="modalLocal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Anadir Local</h2>
+                <span class="close" onclick="closeModal('modalLocal')">&times;</span>
+            </div>
+            <form id="formLocal">
+                <div class="form-group">
+                    <label>Direccion</label>
+                    <input type="text" id="direccion" required>
+                </div>
+                <div class="form-group">
+                    <label>Area (m²)</label>
+                    <input type="number" step="0.01" id="area" required>
+                </div>
+                <div class="form-group">
+                    <label>Valor Arriendo</label>
+                    <input type="number" step="0.01" id="valorArriendo" required>
+                </div>
+                <button type="submit" class="btn btn-success">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Añadir Arrendatario -->
+    <div id="modalArrendatario" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Anadir Arrendatario</h2>
+                <span class="close" onclick="closeModal('modalArrendatario')">&times;</span>
+            </div>
+            <form id="formArrendatario">
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="nombreArr" required>
+                </div>
+                <div class="form-group">
+                    <label>Documento</label>
+                    <input type="text" id="documentoArr" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefono</label>
+                    <input type="text" id="telefonoArr" required>
+                </div>
+                <div class="form-group">
+                    <label>Correo</label>
+                    <input type="email" id="correoArr" required>
+                </div>
+                <button type="submit" class="btn btn-success">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Contrato -->
+<div id="modalContratoNuevo" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>📄 Nuevo Contrato</h2>
+            <span class="close" onclick="closeModal('modalContratoNuevo')">&times;</span>
+        </div>
+        <form id="formContratoNuevo">
+            <div class="form-group">
+                <label>Local</label>
+                <select id="idLocal" required>
+                    <option value="">Seleccionar local...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Arrendatario</label>
+                <select id="idArrendatario" required>
+                    <option value="">Seleccionar arrendatario...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Fecha Inicio</label>
+                <input type="date" id="fechaInicio" required>
+            </div>
+            <div class="form-group">
+                <label>Fecha Fin</label>
+                <input type="date" id="fechaFin" required>
+            </div>
+            <div class="form-group">
+                <label>Condiciones</label>
+                <textarea id="condiciones" rows="3" placeholder="Pago mensual anticipado, incluye servicios..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Crear Contrato</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Editar Contrato -->
+<div id="modalEditarContrato" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>✏️ Actualizar Contrato</h2>
+            <span class="close" onclick="closeModal('modalEditarContrato')">&times;</span>
+        </div>
+        <form id="formEditarContrato">
+            <input type="hidden" id="editarIdContrato">
+            <div class="form-group">
+                <label>Fecha Inicio</label>
+                <input type="date" id="editarFechaInicio" required>
+            </div>
+            <div class="form-group">
+                <label>Fecha Fin</label>
+                <input type="date" id="editarFechaFin" required>
+            </div>
+            <div class="form-group">
+                <label>Condiciones</label>
+                <textarea id="editarCondiciones" rows="3" placeholder="Pago mensual anticipado, incluye servicios..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Editar Local -->
+<div id="modalEditarLocal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>✏️ Editar Local</h2>
+            <span class="close" onclick="closeModal('modalEditarLocal')">&times;</span>
+        </div>
+        <form id="formEditarLocal">
+            <input type="hidden" id="editarIdLocal">
+            <div class="form-group">
+                <label>Direccion</label>
+                <input type="text" id="editarDireccion" required>
+            </div>
+            <div class="form-group">
+                <label>Area (m²)</label>
+                <input type="number" step="0.01" id="editarArea" required>
+            </div>
+            <div class="form-group">
+                <label>Valor Arriendo</label>
+                <input type="number" step="0.01" id="editarValorArriendo" required>
+            </div>
+            <button type="submit" class="btn btn-success">Actualizar</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Editar Arrendatario -->
+<div id="modalEditarArrendatario" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>✏️ Editar Arrendatario</h2>
+            <span class="close" onclick="closeModal('modalEditarArrendatario')">&times;</span>
+        </div>
+        <form id="formEditarArrendatario">
+            <input type="hidden" id="editarIdArrendatario">
+            <div class="form-group">
+                <label>Nombre Completo</label>
+                <input type="text" id="editarNombreArr" required>
+            </div>
+            <div class="form-group">
+                <label>Documento</label>
+                <input type="text" id="editarDocumentoArr" required>
+            </div>
+            <div class="form-group">
+                <label>Telefono</label>
+                <input type="text" id="editarTelefonoArr" required>
+            </div>
+            <div class="form-group">
+                <label>Correo</label>
+                <input type="email" id="editarCorreoArr" required>
+            </div>
+            <button type="submit" class="btn btn-success">Actualizar</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Agregar Servicio -->
+<div id="modalAgregarServicio" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>➕ Agregar Servicio a Local</h2>
+            <span class="close" onclick="closeModal('modalAgregarServicio')">&times;</span>
+        </div>
+        <form id="formAgregarServicio">
+            <div class="form-group">
+                <label>Seleccionar Local</label>
+                <select id="selectLocalServicio" required>
+                    <option value="">Seleccionar local...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Seleccionar Servicio</label>
+                <select id="selectServicioDisponible" required>
+                    <option value="">Seleccionar servicio...</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Agregar Servicio</button>
+                <button type="button" class="btn" onclick="closeModal('modalAgregarServicio')">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Cambiar Estado Mantenimiento -->
+<div id="modalEstadoMantenimiento" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>🔄 Cambiar Estado de Solicitud</h2>
+            <span class="close" onclick="closeModal('modalEstadoMantenimiento')">&times;</span>
+        </div>
+        <form id="formEstadoMantenimiento">
+            <input type="hidden" id="idMantenimiento">
+            
+            <div class="form-group">
+                <label>Estado Actual</label>
+                <input type="text" id="estadoActualMantenimiento" readonly style="background: #f1f5f9; cursor: not-allowed;">
+            </div>
+            
+            <div class="form-group">
+                <label>Nuevo Estado</label>
+                <select id="nuevoEstadoMantenimiento" required>
+                    <option value="">Seleccionar estado...</option>
+                    <option value="pendiente">⏳ Pendiente</option>
+                    <option value="en_proceso">⚙️ En Proceso</option>
+                    <option value="completado">✅ Completado</option>
+                    <option value="cancelado">❌ Cancelado</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-success">Actualizar Estado</button>
+        </form>
+    </div>
+</div>
+
+    <!-- FOOTER - Agregar aquí -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <span class="copyright-symbol">©</span>
+            </div>
+            <p class="footer-main">2025 YCW - Gestión inteligente de propiedades YCW</p>
+            <p class="footer-rights">Todos los derechos reservados</p>
+            <div class="footer-divider"></div>
+            <p class="footer-dev">Desarrollado con por Wilson Solano - Yeison Pulgarin - Carlos Arciniegas</p>
+        </div>
+    </footer>
+    
+</body>
+</html>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

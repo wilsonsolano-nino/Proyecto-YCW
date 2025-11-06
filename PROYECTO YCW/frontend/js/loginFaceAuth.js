@@ -22,7 +22,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     alertBox.style.display = 'none';
 
     try {
-        const response = await fetch('https://proyecto-ycw.railway.internal.up.railway.app/api/login', {
+        const response = await fetch('https://proyecto-ycw-production.up.railway.app/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
@@ -65,7 +65,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
 async function verificarYMostrarFaceAuth(idUsuario) {
     try {
-        const response = await fetch(`https://proyecto-ycw.railway.internal.up.railway.app/api/face-auth/check/${idUsuario}`);
+        const response = await fetch(`https://proyecto-ycw-production.up.railway.app/api/face-auth/check/${idUsuario}`);
         const data = await response.json();
 
         if (data.existe) {
@@ -134,7 +134,7 @@ async function procesarVerificacionFacial() {
         }
 
         // Obtener descriptor guardado
-        const response = await fetch('https://proyecto-ycw.railway.internal.up.railway.app/api/face-auth/verify', {
+        const response = await fetch('https://proyecto-ycw-production.up.railway.app/api/face-auth/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -250,7 +250,7 @@ async function procesarRegistroFacial() {
                 mostrarAlerta('success', '¡Rostro detectado! Guardando...');
                 
                 // Enviar descriptor al backend
-                const response = await fetch('https://proyecto-ycw.railway.internal.up.railway.app/api/face-auth/register', {
+                const response = await fetch('https://proyecto-ycw-production.up.railway.app/api/face-auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

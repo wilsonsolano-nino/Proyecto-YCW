@@ -48,7 +48,7 @@ async function cargarContrato() {
     if (!usuario) return;
 
     try {
-        const response = await fetch(`https://proyecto-ycw.railway.internal.up.railway.app/api/arrendatarios/${usuario.idUsuario}/contratos`);
+        const response = await fetch(`https://proyecto-ycw-production.up.railway.app/api/arrendatarios/${usuario.idUsuario}/contratos`);
         const contratos = await response.json();
         
         const tbody = document.getElementById('tablaContrato');
@@ -150,7 +150,7 @@ async function cargarPagosPendientesMes() {
     try {
         console.log('📋 Cargando pagos pendientes del mes...');
         
-        const response = await fetch(`https://proyecto-ycw.railway.internal.up.railway.app/api/arrendatarios/${usuario.idUsuario}/pagos-pendientes-mes`);
+        const response = await fetch(`https://proyecto-ycw-production.up.railway.app/api/arrendatarios/${usuario.idUsuario}/pagos-pendientes-mes`);
         
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
@@ -383,7 +383,7 @@ async function procesarPagoEspecifico(event, index) {
         
         console.log('📤 Enviando datos:', pagoData);
         
-        const response = await fetch('https://proyecto-ycw.railway.internal.up.railway.app/api/pagos/registrar', {
+        const response = await fetch('https://proyecto-ycw-production.up.railway.app/api/pagos/registrar', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -501,7 +501,7 @@ async function cargarPagosDesdeBD(idArrendatario) {
     try {
         console.log('🔍 [FRONTEND] Cargando pagos para arrendatario:', idArrendatario);
         
-        const response = await fetch(`https://proyecto-ycw.railway.internal.up.railway.app/api/debug/arrendatarios/${idArrendatario}/pagos`);
+        const response = await fetch(`https://proyecto-ycw-production.up.railway.app/api/debug/arrendatarios/${idArrendatario}/pagos`);
         
         if (response.ok) {
             const pagosDebug = await response.json();
@@ -588,7 +588,7 @@ async function cargarServicios() {
             </div>
         `;
 
-        const rContratos = await fetch(`https://proyecto-ycw.railway.internal.up.railway.app/api/arrendatarios/${usuario.idUsuario}/contratos`);
+        const rContratos = await fetch(`https://proyecto-ycw-production.up.railway.app/api/arrendatarios/${usuario.idUsuario}/contratos`);
         if (!rContratos.ok) throw new Error(`Error al obtener contratos: ${rContratos.status}`);
         const contratos = await rContratos.json();
 
@@ -602,7 +602,7 @@ async function cargarServicios() {
             return;
         }
 
-        const rServ = await fetch(`https://proyecto-ycw.railway.internal.up.railway.app/api/servicios-por-local`);
+        const rServ = await fetch(`https://proyecto-ycw-production.up.railway.app/api/servicios-por-local`);
         if (!rServ.ok) throw new Error(`Error al obtener servicios por local: ${rServ.status}`);
         const localesConServicios = await rServ.json();
 
@@ -711,7 +711,7 @@ async function cargarSolicitudesMantenimiento() {
     if (!usuario) return;
 
     try {
-        const response = await fetch(`https://proyecto-ycw.railway.internal.up.railway.app/api/arrendatarios/${usuario.idUsuario}/solicitudes-mantenimiento`);
+        const response = await fetch(`https://proyecto-ycw-production.up.railway.app/api/arrendatarios/${usuario.idUsuario}/solicitudes-mantenimiento`);
         
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
@@ -804,7 +804,7 @@ async function cargarLocalesParaSolicitud() {
     if (!usuario) return;
 
     try {
-        const response = await fetch(`https://proyecto-ycw.railway.internal.up.railway.app/api/arrendatarios/${usuario.idUsuario}/contratos`);
+        const response = await fetch(`https://proyecto-ycw-production.up.railway.app/api/arrendatarios/${usuario.idUsuario}/contratos`);
         const contratos = await response.json();
         
         const selectLocal = document.getElementById('selectLocalSolicitud');
@@ -869,7 +869,7 @@ function inicializarFormularioSolicitudes() {
             }
             
             try {
-                const response = await fetch('https://proyecto-ycw.railway.internal.up.railway.app/api/mantenimiento/solicitud', {
+                const response = await fetch('https://proyecto-ycw-production.up.railway.app/api/mantenimiento/solicitud', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

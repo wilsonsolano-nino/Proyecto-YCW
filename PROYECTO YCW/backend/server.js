@@ -13,8 +13,8 @@ const GestionPagos = require('./src/controllers/GestionPagos');
 const GestionServicios = require('./src/controllers/GestionServicios');
 
 const app = express();
-const PORT = process.env.PORT || 8080; 
 
+const PORT = process.env.PORT || 8080;  
 // Middlewares
 app.use(cors());
 app.use(express.json());
@@ -1718,10 +1718,14 @@ app.delete('/api/face-auth/delete/:idUsuario', (req, res) => {
     });
 });
 
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend', 'ycw.html'));
+});
+
 // ==========================================
 // INICIAR SERVIDOR
 // ==========================================
 
-app.listen(PORT, () => {
-    console.log(`!!!! Servidor corriendo en http://localhost:${PORT}!!!!`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Servidor corriendo en puerto ${PORT}`);
 });
